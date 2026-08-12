@@ -43,3 +43,7 @@ npm run preview
 ## Repository
 
 [https://github.com/Lexi2cool/motive](https://github.com/Lexi2cool/motive)
+
+## Live
+
+[https://lexi2cool.github.io/motive](https://lexi2cool.github.io/motive)
