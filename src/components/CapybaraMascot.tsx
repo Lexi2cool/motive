@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 
-const insults = [
+const roasts = [
   "Capybara says: Still here? Your tasks aren't going to complete themselves, bestie.",
-  "Capybara says: Procrastination level: expert. But I believe in you! ✨",
+  "Capybara says: Procrastination level: expert. But I believe in you... barely.",
   "Capybara says: That task has been staring at you for 20 minutes. Be nice to it.",
   "Capybara says: I'm a capybara and even I'm more productive than you right now.",
   "Capybara says: Break? Already? You've been working for... 2 minutes. Bold.",
@@ -17,39 +17,28 @@ const insults = [
   "Capybara says: I've seen turtles move faster. And they carry their house on their back. Just saying.",
   "Capybara says: The hardest part is starting. You can do hard things. Probably.",
   "Capybara says: Your to-do list is getting lonely. Give it some love.",
-]
-
-const encouragements = [
-  "Capybara says: Look at you go! Absolutely crushing it! 🦾",
-  "Capybara says: Task completed! I'm basically your personal hype capybara.",
-  "Capybara says: You're on fire! (Not literally, that would be bad for a capybara).",
-  "Capybara says: BOOM. Another one bites the dust. Or rather, you bite the dust off your to-do list.",
-  "Capybara says: That's the stuff! Keep that momentum rolling! 🎉",
-  "Capybara says: Productivity level: CAPYBARA APPROVED. 🏆",
-  "Capybara says: You're making me proud and I'm literally a rodent. Impressive.",
+  "Capybara says: You opened this app. That's step 1. Now do step 2.",
+  "Capybara says: I'm literally a rodent who's better at time management. Think about that.",
+  "Capybara says: That task isn't going to get less intimidating. Start before you overthink it.",
+  "Capybara says: Your productivity is currently at capybara-in-a-hot-tub levels. Zero urgency.",
+  "Capybara says: One day you'll look back and be glad you started. Today is that day. Probably.",
+  "Capybara says: I don't judge. I just sit here. Unlike you, who has things to do.",
+  "Capybara says: You're scrolling past this instead of working. I see you.",
+  "Capybara says: That task has a deadline. You don't. Choose wisely.",
+  "Capybara says: Motivation is a feeling. Discipline is doing it anyway. Pick discipline.",
+  "Capybara says: If you were any more relaxed, you'd be me. And I have nothing to do. You do.",
 ]
 
 export default function CapybaraMascot() {
   const [message, setMessage] = useState('')
   const [isVisible, setIsVisible] = useState(true)
-  const [isEncouraging, setIsEncouraging] = useState(false)
 
   useEffect(() => {
-    const messages = isEncouraging ? encouragements : insults
-    setMessage(messages[Math.floor(Math.random() * messages.length)])
-  }, [isEncouraging])
+    setMessage(roasts[Math.floor(Math.random() * roasts.length)])
+  }, [])
 
   const refreshMessage = () => {
-    const messages = isEncouraging ? encouragements : insults
-    setMessage(messages[Math.floor(Math.random() * messages.length)])
-  }
-
-  const toggleMode = () => {
-    setIsEncouraging(prev => !prev)
-    setTimeout(() => {
-      const messages = !isEncouraging ? encouragements : insults
-      setMessage(messages[Math.floor(Math.random() * messages.length)])
-    }, 100)
+    setMessage(roasts[Math.floor(Math.random() * roasts.length)])
   }
 
   if (!isVisible) {
@@ -81,17 +70,7 @@ export default function CapybaraMascot() {
             onClick={refreshMessage}
             className="flex-1 text-xs bg-purple-100 text-purple-700 hover:bg-purple-200 px-3 py-2 rounded-xl font-bold transition-colors"
           >
-            New message
-          </button>
-          <button
-            onClick={toggleMode}
-            className={`flex-1 text-xs px-3 py-2 rounded-xl font-bold transition-colors ${
-              isEncouraging
-                ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-            }`}
-          >
-            {isEncouraging ? '😤 Roast me' : '😊 Be nice'}
+            Roast me again
           </button>
         </div>
       </div>
