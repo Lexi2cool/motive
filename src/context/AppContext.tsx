@@ -1,9 +1,9 @@
 import { createContext, useContext, useReducer, type ReactNode } from 'react'
-import { tasks as taskQueries, sessions as sessionQueries, profile as profileQueries, badges as badgeQueries, rewards as rewardQueries, settings as settingsQueries, friends as friendQueries, challenges as challengeQueries } from '../db/queries'
+import { tasks as taskQueries, sessions as sessionQueries, profile as profileQueries, badges as badgeQueries, rewards as rewardQueries, userRewards as userRewardQueries, settings as settingsQueries, friends as friendQueries, challenges as challengeQueries, tournaments as tournamentQueries, houseEvents as houseEventQueries, gifts as giftQueries } from '../db/queries'
 import { calculatePoints, addPoints, calculateLevelPoints } from '../utils/points'
 import { updateStreak } from '../utils/streaks'
 import { seedDatabase } from '../db/schema'
-import type { Task, Session, Profile, Badge, Reward, Setting, Friend, Challenge } from '../db/schema'
+import type { Task, Session, Profile, Badge, Reward, Setting, Friend, Challenge, Tournament, HouseEvent, Gift } from '../db/schema'
 
 seedDatabase().catch(() => {})
 
@@ -16,6 +16,9 @@ interface AppState {
   settings: Setting | null
   friends: Friend[]
   challenges: Challenge[]
+  tournaments: Tournament[]
+  houseEvents: HouseEvent[]
+  gifts: Gift[]
   loading: boolean
   showOnboarding: boolean
 }
@@ -39,6 +42,14 @@ type Action =
   | { type: 'ADD_CHALLENGE'; payload: Challenge }
   | { type: 'UPDATE_CHALLENGE'; payload: { id: string; changes: Partial<Challenge> } }
   | { type: 'DELETE_CHALLENGE'; payload: string }
+  | { type: 'SET_TOURNAMENTS'; payload: Tournament[] }
+  | { type: 'ADD_TOURNAMENT'; payload: Tournament }
+  | { type: 'UPDATE_TOURNAMENT'; payload: { id: string; changes: Partial<Tournament> } }
+  | { type: 'SET_HOUSE_EVENTS'; payload: HouseEvent[] }
+  | { type: 'ADD_HOUSE_EVENT'; payload: HouseEvent }
+  | { type: 'UPDATE_HOUSE_EVENT'; payload: { id: string; changes: Partial<HouseEvent> } }
+  | { type: 'SET_GIFTS'; payload: Gift[] }
+  | { type: 'ADD_GIFT'; payload: Gift }
   | { type: 'COMPLETE_TASK'; payload: { task: Task; durationMinutes?: number } }
   | { type: 'COMPLETE_SESSION'; payload: Session }
   | { type: 'SHOW_ONBOARDING'; payload: boolean }
@@ -52,6 +63,9 @@ const initialState: AppState = {
   settings: null,
   friends: [],
   challenges: [],
+  tournaments: [],
+  houseEvents: [],
+  gifts: [],
   loading: true,
   showOnboarding: false,
 }
@@ -102,6 +116,30 @@ function reducer(state: AppState, action: Action): AppState {
     }
     case 'DELETE_CHALLENGE':
       return { ...state, challenges: state.challenges.filter(c => c.id !== action.payload) }
+    case 'SET_TOURNAMENTS':
+      return { ...state, tournaments: action.payload }
+    case 'ADD_TOURNAMENT':
+      return { ...state, tournaments: [action.payload, ...state.tournaments] }
+    case 'UPDATE_TOURNAMENT': {
+      const updated = state.tournaments.map(t =>
+        t.id === action.payload.id ? { ...t, ...action.payload.changes } : t
+      )
+      return { ...state, tournaments: updated }
+    }
+    case 'SET_HOUSE_EVENTS':
+      return { ...state, houseEvents: action.payload }
+    case 'ADD_HOUSE_EVENT':
+      return { ...state, houseEvents: [action.payload, ...state.houseEvents] }
+    case 'UPDATE_HOUSE_EVENT': {
+      const updated = state.houseEvents.map(e =>
+        e.id === action.payload.id ? { ...e, ...action.payload.changes } : e
+      )
+      return { ...state, houseEvents: updated }
+    }
+    case 'SET_GIFTS':
+      return { ...state, gifts: action.payload }
+    case 'ADD_GIFT':
+      return { ...state, gifts: [action.payload, ...state.gifts] }
     case 'COMPLETE_TASK': {
       const { task, durationMinutes } = action.payload
       const points = calculatePoints(task.difficulty) + (durationMinutes ? Math.floor(durationMinutes / 5) * 2 : 0)
@@ -171,8 +209,16 @@ interface AppContextValue {
   removeFriend: (id: string) => Promise<void>
   addChallenge: (challenge: Omit<Challenge, 'id'>) => Promise<void>
   completeChallenge: (id: string) => Promise<void>
+  createTournament: (tournament: Omit<Tournament, 'id'>) => Promise<void>
+  joinTournament: (id: string) => Promise<boolean>
+  createHouseEvent: (event: Omit<HouseEvent, 'id'>) => Promise<void>
+  joinHouseEvent: (id: string) => Promise<boolean>
+  sendGift: (gift: Omit<Gift, 'id'>) => Promise<boolean>
+  openMysteryBox: (rewardId: string) => Promise<{ points: number; reward?: Reward }>
+  activatePowerUp: (type: string) => Promise<boolean>
+  useStreakShield: () => Promise<boolean>
+  unlockMinigame: (rewardId: string) => Promise<boolean>
   refreshData: () => Promise<void>
-  startOnboarding: () => void
   finishOnboarding: (house: Profile['house'], displayName: string) => Promise<void>
 }
 
@@ -182,7 +228,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState)
 
   const refreshData = async () => {
-    const [tasks, sessions, profile, badges, rewards, settings, friends, challenges] = await Promise.all([
+    const [tasks, sessions, profile, badges, rewards, settings, friends, challenges, tournaments, houseEvents, gifts] = await Promise.all([
       taskQueries.getAll(),
       sessionQueries.getAll(),
       profileQueries.get(),
@@ -191,6 +237,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       settingsQueries.get(),
       friendQueries.getAll(),
       challengeQueries.getAll(),
+      tournamentQueries.getAll(),
+      houseEventQueries.getAll(),
+      giftQueries.getAll(),
     ])
     dispatch({ type: 'SET_TASKS', payload: tasks })
     dispatch({ type: 'SET_SESSIONS', payload: sessions })
@@ -205,6 +254,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (settings) dispatch({ type: 'SET_SETTINGS', payload: settings })
     dispatch({ type: 'SET_FRIENDS', payload: friends })
     dispatch({ type: 'SET_CHALLENGES', payload: challenges })
+    dispatch({ type: 'SET_TOURNAMENTS', payload: tournaments })
+    dispatch({ type: 'SET_HOUSE_EVENTS', payload: houseEvents })
+    dispatch({ type: 'SET_GIFTS', payload: gifts })
     dispatch({ type: 'SET_LOADING', payload: false })
   }
 
@@ -258,19 +310,100 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const purchaseReward = async (rewardId: string): Promise<boolean> => {
     const reward = state.rewards.find(r => r.id === rewardId)
     if (!reward || !state.profile) return false
-    if (reward.unlockedAt) return false
     if (state.profile.totalPoints < reward.cost) return false
 
-    await rewardQueries.purchase(rewardId)
     const xpResult = addPoints(state.profile.totalPoints, -reward.cost)
     await profileQueries.update({
       totalPoints: xpResult.newXP,
       xpToNextLevel: calculateLevelPoints(state.profile.level),
     })
+
+    if (reward.type === 'streak-shield') {
+      await profileQueries.update({ streakShields: (state.profile.streakShields || 0) + 1 })
+    } else if (reward.type === 'power-up') {
+      const expiresAt = new Date()
+      expiresAt.setHours(expiresAt.getHours() + 1)
+      await profileQueries.update({
+        activePowerUps: [...(state.profile.activePowerUps || []), { type: reward.name, expiresAt: expiresAt.toISOString() }],
+      })
+    } else if (reward.type === 'minigame') {
+      await profileQueries.update({
+        unlockedMinigames: [...(state.profile.unlockedMinigames || []), rewardId],
+      })
+    } else if (reward.type === 'mystery-box') {
+      const prize = openMysteryBox()
+      if (prize.points > 0) {
+        const prizeXP = addPoints(state.profile.totalPoints, prize.points)
+        await profileQueries.update({ totalPoints: prizeXP.newXP })
+      }
+      if (prize.reward) {
+        await userRewardQueries.add({ rewardId: prize.reward.id!, userId: 'self', unlockedAt: new Date().toISOString() })
+      }
+    } else if (reward.type === 'tournament-entry') {
+    } else if (reward.type === 'house-event') {
+    } else if (reward.type === 'gift') {
+    } else {
+      await rewardQueries.purchase(rewardId)
+    }
+
     dispatch({
       type: 'SET_REWARDS',
       payload: state.rewards.map(r => r.id === rewardId ? { ...r, unlockedAt: new Date().toISOString() } : r),
     })
+    const profile = await profileQueries.get()
+    if (profile) dispatch({ type: 'SET_PROFILE', payload: profile })
+    return true
+  }
+
+  const openMysteryBox = async (): Promise<{ points: number; reward?: Reward }> => {
+    const roll = Math.random()
+    if (roll < 0.15) {
+      return { points: -50, reward: undefined }
+    } else if (roll < 0.35) {
+      return { points: 0, reward: undefined }
+    } else if (roll < 0.60) {
+      return { points: 25 }
+    } else if (roll < 0.80) {
+      return { points: 50 }
+    } else if (roll < 0.95) {
+      return { points: 100 }
+    } else {
+      const jackpots = state.rewards.filter(r => r.type === 'theme' || r.type === 'avatar')
+      const reward = jackpots[Math.floor(Math.random() * jackpots.length)]
+      return { points: 0, reward: reward || undefined }
+    }
+  }
+
+  const activatePowerUp = async (type: string): Promise<boolean> => {
+    if (!state.profile) return false
+    const now = new Date().toISOString()
+    const activePowerUps = state.profile.activePowerUps || []
+    const existing = activePowerUps.find(p => p.type === type)
+    if (existing && new Date(existing.expiresAt) > new Date()) return false
+
+    const expiresAt = new Date()
+    expiresAt.setHours(expiresAt.getHours() + 1)
+    await profileQueries.update({
+      activePowerUps: [...activePowerUps.filter(p => p.type !== type), { type, expiresAt: expiresAt.toISOString() }],
+    })
+    const profile = await profileQueries.get()
+    if (profile) dispatch({ type: 'SET_PROFILE', payload: profile })
+    return true
+  }
+
+  const useStreakShield = async (): Promise<boolean> => {
+    if (!state.profile || state.profile.streakShields === 0) return false
+    await profileQueries.update({ streakShields: state.profile.streakShields - 1 })
+    const profile = await profileQueries.get()
+    if (profile) dispatch({ type: 'SET_PROFILE', payload: profile })
+    return true
+  }
+
+  const unlockMinigame = async (rewardId: string): Promise<boolean> => {
+    if (!state.profile) return false
+    const existing = state.profile.unlockedMinigames || []
+    if (existing.includes(rewardId)) return true
+    await profileQueries.update({ unlockedMinigames: [...existing, rewardId] })
     const profile = await profileQueries.get()
     if (profile) dispatch({ type: 'SET_PROFILE', payload: profile })
     return true
@@ -302,8 +435,59 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const startOnboarding = () => {
-    dispatch({ type: 'SHOW_ONBOARDING', payload: true })
+  const createTournament = async (tournament: Omit<Tournament, 'id'>) => {
+    await tournamentQueries.add(tournament)
+    dispatch({ type: 'ADD_TOURNAMENT', payload: { ...tournament, id: crypto.randomUUID() } as Tournament })
+  }
+
+  const joinTournament = async (id: string): Promise<boolean> => {
+    const tournament = state.tournaments.find(t => t.id === id)
+    if (!tournament || !state.profile) return false
+    if (tournament.participants.includes('self')) return false
+    if (state.profile.totalPoints < tournament.entryFee) return false
+
+    const xpResult = addPoints(state.profile.totalPoints, -tournament.entryFee)
+    await profileQueries.update({ totalPoints: xpResult.newXP })
+    await tournamentQueries.join(id, 'self')
+    dispatch({ type: 'UPDATE_TOURNAMENT', payload: { id, changes: { participants: [...tournament.participants, 'self'] } } })
+    const profile = await profileQueries.get()
+    if (profile) dispatch({ type: 'SET_PROFILE', payload: profile })
+    return true
+  }
+
+  const createHouseEvent = async (event: Omit<HouseEvent, 'id'>) => {
+    await houseEventQueries.add(event)
+    dispatch({ type: 'ADD_HOUSE_EVENT', payload: { ...event, id: crypto.randomUUID() } as HouseEvent })
+  }
+
+  const joinHouseEvent = async (id: string): Promise<boolean> => {
+    const event = state.houseEvents.find(e => e.id === id)
+    if (!event || !state.profile) return false
+    if (event.participants.includes('self')) return false
+    if (state.profile.totalPoints < event.cost) return false
+
+    const xpResult = addPoints(state.profile.totalPoints, -event.cost)
+    await profileQueries.update({ totalPoints: xpResult.newXP })
+    await houseEventQueries.join(id, 'self')
+    dispatch({ type: 'UPDATE_HOUSE_EVENT', payload: { id, changes: { participants: [...event.participants, 'self'] } } })
+    const profile = await profileQueries.get()
+    if (profile) dispatch({ type: 'SET_PROFILE', payload: profile })
+    return true
+  }
+
+  const sendGift = async (gift: Omit<Gift, 'id'>): Promise<boolean> => {
+    if (!state.profile) return false
+    const reward = state.rewards.find(r => r.id === gift.rewardId)
+    if (!reward) return false
+    if (state.profile.totalPoints < reward.cost) return false
+
+    const xpResult = addPoints(state.profile.totalPoints, -reward.cost)
+    await profileQueries.update({ totalPoints: xpResult.newXP })
+    await giftQueries.add({ ...gift, fromUserId: 'self', sentAt: new Date().toISOString() })
+    dispatch({ type: 'ADD_GIFT', payload: { ...gift, id: crypto.randomUUID(), fromUserId: 'self', sentAt: new Date().toISOString() } as Gift })
+    const profile = await profileQueries.get()
+    if (profile) dispatch({ type: 'SET_PROFILE', payload: profile })
+    return true
   }
 
   const finishOnboarding = async (house: Profile['house'], displayName: string) => {
@@ -314,7 +498,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AppContext.Provider value={{ state, dispatch, addTask, updateTask, deleteTask, completeTask, addSession, completeSession, updateSettings, updateProfile, purchaseReward, addFriend, removeFriend, addChallenge, completeChallenge, refreshData, startOnboarding, finishOnboarding }}>
+    <AppContext.Provider value={{ state, dispatch, addTask, updateTask, deleteTask, completeTask, addSession, completeSession, updateSettings, updateProfile, purchaseReward, addFriend, removeFriend, addChallenge, completeChallenge, createTournament, joinTournament, createHouseEvent, joinHouseEvent, sendGift, openMysteryBox, activatePowerUp, useStreakShield, unlockMinigame, refreshData, finishOnboarding }}>
       {children}
     </AppContext.Provider>
   )

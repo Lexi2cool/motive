@@ -47,6 +47,14 @@ export interface Profile {
     background: string
   }
   hasCompletedOnboarding: boolean
+  activePowerUps: {
+    type: string
+    expiresAt: string
+  }[]
+  streakShields: number
+  unlockedMinigames: string[]
+  tournamentWins: number
+  housePoints: number
 }
 
 export interface Badge {
@@ -63,8 +71,16 @@ export interface Reward {
   name: string
   description: string
   cost: number
-  type: 'theme' | 'avatar' | 'badge' | 'motivation' | 'power-up' | 'minigame'
+  type: 'theme' | 'avatar' | 'badge' | 'motivation' | 'power-up' | 'minigame' | 'mystery-box' | 'streak-shield' | 'tournament-entry' | 'house-event' | 'gift'
   unlockedAt?: string
+}
+
+export interface UserReward {
+  id?: string
+  rewardId: string
+  userId: string
+  unlockedAt: string
+  expiresAt?: string
 }
 
 export interface Setting {
@@ -105,15 +121,65 @@ export interface Challenge {
   completed: boolean
 }
 
+export interface Tournament {
+  id?: string
+  name: string
+  description: string
+  entryFee: number
+  prizePool: number
+  maxParticipants: number
+  participants: string[]
+  createdBy: string
+  createdAt: string
+  expiresAt: string
+  completed: boolean
+}
+
+export interface HouseEvent {
+  id?: string
+  name: string
+  description: string
+  house: 'nebula' | 'eclipse' | 'solstice' | 'supernova' | 'all'
+  cost: number
+  participants: string[]
+  createdBy: string
+  createdAt: string
+  expiresAt: string
+  completed: boolean
+}
+
+export interface Gift {
+  id?: string
+  fromUserId: string
+  toUserId: string
+  rewardId: string
+  message: string
+  sentAt: string
+}
+
+export interface SavingsEntry {
+  id?: string
+  amount: number
+  description: string
+  category: 'food' | 'transport' | 'entertainment' | 'shopping' | 'bills' | 'other'
+  date: string
+  createdAt: string
+}
+
 class FocusArenaDB extends Dexie {
   tasks!: Table<Task>
   sessions!: Table<Session>
   profile!: Table<Profile>
   badges!: Table<Badge>
   rewards!: Table<Reward>
+  userRewards!: Table<UserReward>
   settings!: Table<Setting>
   friends!: Table<Friend>
   challenges!: Table<Challenge>
+  tournaments!: Table<Tournament>
+  houseEvents!: Table<HouseEvent>
+  gifts!: Table<Gift>
+  savings!: Table<SavingsEntry>
 
   constructor() {
     super('motive-db')
@@ -144,6 +210,21 @@ class FocusArenaDB extends Dexie {
       friends: 'id, username, house, totalPoints',
       challenges: 'id, createdBy, createdAt, completed',
     })
+    this.version(4).stores({
+      tasks: 'id, category, difficulty, completed, dueDate, createdAt',
+      sessions: 'id, taskId, startedAt, endedAt',
+      profile: 'id',
+      badges: 'id, name',
+      rewards: 'id, type, cost',
+      userRewards: 'id, rewardId, userId',
+      settings: 'id',
+      friends: 'id, username, house, totalPoints',
+      challenges: 'id, createdBy, createdAt, completed',
+      tournaments: 'id, createdBy, completed',
+      houseEvents: 'id, house, createdBy, completed',
+      gifts: 'id, fromUserId, toUserId',
+      savings: 'id, category, date, createdAt',
+    })
   }
 }
 
@@ -169,6 +250,11 @@ export async function seedDatabase() {
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     },
     hasCompletedOnboarding: false,
+    activePowerUps: [],
+    streakShields: 0,
+    unlockedMinigames: [],
+    tournamentWins: 0,
+    housePoints: 0,
   })
 
   const defaultBadges: Omit<Badge, 'id'>[] = [
@@ -180,6 +266,8 @@ export async function seedDatabase() {
     { name: 'Social Butterfly', description: 'Add your first friend', icon: '🦋', criteria: 'add_first_friend' },
     { name: 'Challenge Accepted', description: 'Complete your first challenge', icon: '⚔️', criteria: 'complete_first_challenge' },
     { name: 'Spin Master', description: 'Use the daily spin 7 times', icon: '🎰', criteria: 'spin_7_times' },
+    { name: 'Tournament Champion', description: 'Win your first tournament', icon: '🏆', criteria: 'win_first_tournament' },
+    { name: 'House Hero', description: 'Earn 100 house points', icon: '🏠', criteria: 'earn_100_house_points' },
   ]
   await db.badges.bulkAdd(defaultBadges)
 
@@ -191,10 +279,15 @@ export async function seedDatabase() {
     { name: 'Avatar Frame: Neon', description: 'Neon glow frame', cost: 50, type: 'avatar' },
     { name: 'Morning Motivation', description: 'Start your day inspired', cost: 20, type: 'motivation' },
     { name: 'Focus Boost', description: '2x points for 1 hour', cost: 150, type: 'power-up' },
-    { name: 'Streak Shield', description: 'Protect your streak for 1 day', cost: 200, type: 'power-up' },
+    { name: 'Streak Shield', description: 'Protect your streak for 1 day', cost: 200, type: 'streak-shield' },
+    { name: 'Mystery Box', description: 'Could be amazing, could be terrible...', cost: 100, type: 'mystery-box' },
+    { name: 'Jumbo Mystery Box', description: 'Bigger risk, bigger reward', cost: 250, type: 'mystery-box' },
     { name: 'Memory Match', description: 'Classic memory card game', cost: 100, type: 'minigame' },
     { name: 'Quick Math', description: 'Speed math challenge', cost: 80, type: 'minigame' },
     { name: 'Word Scramble', description: 'Unscramble words before time runs out', cost: 120, type: 'minigame' },
+    { name: 'Tournament Ticket', description: 'Enter a points tournament', cost: 150, type: 'tournament-entry' },
+    { name: 'House Event Ticket', description: 'Join a house-wide event', cost: 100, type: 'house-event' },
+    { name: 'Send a Gift', description: 'Send points to a friend', cost: 50, type: 'gift' },
   ]
   await db.rewards.bulkAdd(defaultRewards)
 

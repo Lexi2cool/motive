@@ -1,4 +1,4 @@
-import { db, type Task, type Session, type Profile, type Reward, type Setting, type Friend, type Challenge } from './schema'
+import { db, type Task, type Session, type Profile, type Reward, type Setting, type Friend, type Challenge, type Tournament, type HouseEvent, type Gift, type UserReward } from './schema'
 
 export const tasks = {
   getAll: () => db.tasks.orderBy('createdAt').reverse().toArray(),
@@ -39,6 +39,13 @@ export const rewards = {
   purchase: (id: string) => db.rewards.update(id, { unlockedAt: new Date().toISOString() }),
 }
 
+export const userRewards = {
+  getAll: () => db.userRewards.toArray(),
+  getByUser: (userId: string) => db.userRewards.where('userId').equals(userId).toArray(),
+  add: (reward: Omit<UserReward, 'id'>) => db.userRewards.add({ ...reward, id: crypto.randomUUID() }),
+  hasUnlocked: (rewardId: string, userId: string) => db.userRewards.where('rewardId').equals(rewardId).and(r => r.userId === userId).toArray(),
+}
+
 export const settings = {
   get: () => db.settings.get(1),
   update: (changes: Partial<Setting>) => db.settings.update(1, changes),
@@ -60,4 +67,33 @@ export const challenges = {
     const now = new Date().toISOString()
     return db.challenges.where('completed').equals(0).and(c => c.expiresAt > now).toArray()
   },
+}
+
+export const tournaments = {
+  getAll: () => db.tournaments.orderBy('createdAt').reverse().toArray(),
+  getActive: () => {
+    const now = new Date().toISOString()
+    return db.tournaments.where('completed').equals(0).and(t => t.expiresAt > now).toArray()
+  },
+  add: (tournament: Omit<Tournament, 'id'>) => db.tournaments.add({ ...tournament, id: crypto.randomUUID() }),
+  update: (id: string, changes: Partial<Tournament>) => db.tournaments.update(id, changes),
+  join: (id: string, userId: string) => db.tournaments.update(id, { participants: [...(await db.tournaments.get(id)!).participants, userId] }),
+}
+
+export const houseEvents = {
+  getAll: () => db.houseEvents.orderBy('createdAt').reverse().toArray(),
+  getActive: () => {
+    const now = new Date().toISOString()
+    return db.houseEvents.where('completed').equals(0).and(e => e.expiresAt > now).toArray()
+  },
+  add: (event: Omit<HouseEvent, 'id'>) => db.houseEvents.add({ ...event, id: crypto.randomUUID() }),
+  update: (id: string, changes: Partial<HouseEvent>) => db.houseEvents.update(id, changes),
+  join: (id: string, userId: string) => db.houseEvents.update(id, { participants: [...(await db.houseEvents.get(id)!).participants, userId] }),
+}
+
+export const gifts = {
+  getAll: () => db.gifts.orderBy('sentAt').reverse().toArray(),
+  add: (gift: Omit<Gift, 'id'>) => db.gifts.add({ ...gift, id: crypto.randomUUID() }),
+  getReceived: (userId: string) => db.gifts.where('toUserId').equals(userId).toArray(),
+  getSent: (userId: string) => db.gifts.where('fromUserId').equals(userId).toArray(),
 }
