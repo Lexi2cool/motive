@@ -5,7 +5,7 @@ import { updateStreak } from '../utils/streaks'
 import { seedDatabase } from '../db/schema'
 import type { Task, Session, Profile, Badge, Reward, Setting, Friend, Challenge } from '../db/schema'
 
-seedDatabase()
+seedDatabase().catch(() => {})
 
 interface AppState {
   tasks: Task[]
