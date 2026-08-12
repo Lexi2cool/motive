@@ -11,14 +11,14 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'Focus Arena',
-        short_name: 'FocusArena',
-        description: 'Student Productivity App with Reward System',
-        theme_color: '#1e293b',
-        background_color: '#0f172a',
+        name: 'Motive',
+        short_name: 'Motive',
+        description: 'Productivity PWA with Houses, Friends, and Rewards',
+        theme_color: '#7c3aed',
+        background_color: '#faf5ff',
         display: 'standalone',
-        scope: '/',
-        start_url: '/',
+        scope: '/motive/',
+        start_url: '/motive/',
         icons: [
           {
             src: 'pwa-192x192.png',
@@ -53,4 +53,5 @@ export default defineConfig({
       },
     }),
   ],
+  base: '/motive/',
 })
