@@ -33,7 +33,7 @@ function AppContent() {
             <div className="absolute inset-0 rounded-full border-4 border-purple-200 border-t-purple-400 animate-spin" />
             <div className="absolute inset-2 rounded-full border-4 border-violet-200 border-b-violet-400 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
           </div>
-          <p className="text-purple-700 font-semibold text-lg">Loading Focus Arena...</p>
+          <p className="text-purple-700 font-semibold text-lg">Loading Motive...</p>
           <p className="text-purple-400 text-sm mt-2">Preparing your productivity journey</p>
         </div>
       </div>
@@ -80,7 +80,7 @@ function AppContent() {
               </div>
               <div>
                 <h1 className="text-3xl sm:text-4xl font-black gradient-text tracking-tight">
-                  Focus Arena
+                  Motive
                 </h1>
                 <p className="text-sm text-purple-600 font-semibold mt-0.5">
                   {state.profile?.displayName || 'Student'} • Level {state.profile?.level || 1} • {state.profile?.totalPoints || 0} pts

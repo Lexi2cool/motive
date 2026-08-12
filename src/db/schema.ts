@@ -116,7 +116,7 @@ class FocusArenaDB extends Dexie {
   challenges!: Table<Challenge>
 
   constructor() {
-    super('focus-arena-db')
+    super('motive-db')
     this.version(3).stores({
       tasks: 'id, category, difficulty, completed, dueDate, createdAt',
       sessions: 'id, taskId, startedAt, endedAt',

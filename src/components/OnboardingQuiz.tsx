@@ -150,7 +150,7 @@ export default function OnboardingQuiz({ onComplete }: OnboardingQuizProps) {
             onClick={handleFinish}
             className="w-full bg-gradient-to-r from-purple-500 to-violet-500 hover:from-purple-600 hover:to-violet-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-purple-200/50 hover:shadow-xl hover:shadow-purple-300/50 transition-all duration-300"
           >
-            Enter Focus Arena ✨
+            Enter Motive ✨
           </button>
         </div>
       </div>
