@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { MessageCircle, X } from 'lucide-react'
+import { X } from 'lucide-react'
 
 const insults = [
   "Capybara says: Still here? Your tasks aren't going to complete themselves, bestie.",

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ShoppingCart, Sparkles, Gamepad2 } from 'lucide-react'
+import { ShoppingCart, Sparkles } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 
 const typeIcons: Record<string, string> = {

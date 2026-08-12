@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useApp } from '../context/AppContext'
-import { calculateLevelPoints, addPoints } from '../utils/points'
 
 const spinPrizes = [
   { label: '10 pts', value: 10, probability: 30, color: 'from-purple-400 to-violet-500' },
@@ -54,7 +53,6 @@ export default function DailySpin() {
       setShowResult(true)
 
       if (prize.value > 0 && state.profile) {
-        const xpResult = addPoints(state.profile.totalPoints, prize.value)
         await updateSettings({
           dailySpinsRemaining: prize.label === 'Free Spin' ? spinsRemaining : spinsRemaining - 1,
           lastSpinDate: today,

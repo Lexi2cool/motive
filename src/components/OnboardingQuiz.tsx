@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Sparkles, ArrowRight, ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
 const questions = [
   {

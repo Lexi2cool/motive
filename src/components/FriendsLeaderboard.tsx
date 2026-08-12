@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Trophy, Users, Plus, Trash2, Swords, Crown } from 'lucide-react'
+import { Trophy, Users, Plus, Trash2, Swords, Crown, X } from 'lucide-react'
 import { useApp } from '../context/AppContext'
-import type { Friend, Challenge } from '../db/schema'
+import type { Friend } from '../db/schema'
 
 const houseColors: Record<string, string> = {
   nebula: 'from-violet-500 to-purple-600',

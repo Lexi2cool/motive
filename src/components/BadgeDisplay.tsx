@@ -9,8 +9,6 @@ interface BadgeDisplayProps {
 }
 
 export default function BadgeDisplay({ badges }: BadgeDisplayProps) {
-  const unlocked = badges.filter(b => b.unlockedAt)
-  const locked = badges.filter(b => !b.unlockedAt)
 
   return (
     <div>

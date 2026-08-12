@@ -16,7 +16,7 @@ const BACKGROUNDS = [
 ]
 
 export default function AvatarCustomization() {
-  const { state, updateSettings } = useApp()
+  const { state, updateProfile } = useApp()
   const [selectedHead, setSelectedHead] = useState(state.profile?.avatar.head || '😊')
   const [selectedBody, setSelectedBody] = useState(state.profile?.avatar.body || '👕')
   const [selectedAccessory, setSelectedAccessory] = useState(state.profile?.avatar.accessory || 'none')
@@ -24,7 +24,7 @@ export default function AvatarCustomization() {
 
   const saveAvatar = async () => {
     if (state.profile) {
-      await updateSettings({
+      await updateProfile({
         avatar: { head: selectedHead, body: selectedBody, accessory: selectedAccessory, background: selectedBackground },
       })
     }

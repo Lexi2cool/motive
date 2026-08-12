@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Trophy, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 
 const EMOJIS = ['🎮', '🎯', '🎨', '🎪', '🎭', '🎬', '🎤', '🎸']
@@ -9,7 +9,7 @@ interface MinigamesProps {
 }
 
 export default function Minigames({ onClose }: MinigamesProps) {
-  const { state, completeSession } = useApp()
+  const { completeSession } = useApp()
   const [activeGame, setActiveGame] = useState<'menu' | 'memory' | 'math'>('menu')
   const [memoryCards, setMemoryCards] = useState<{ id: string; emoji: string; flipped: boolean; matched: boolean }[]>([])
   const [selectedCards, setSelectedCards] = useState<number[]>([])

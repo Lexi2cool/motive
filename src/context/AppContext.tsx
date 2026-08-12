@@ -165,6 +165,7 @@ interface AppContextValue {
   addSession: (session: Omit<Session, 'id'>) => Promise<void>
   completeSession: (session: Session) => Promise<void>
   updateSettings: (changes: Partial<Setting>) => Promise<void>
+  updateProfile: (changes: Partial<Profile>) => Promise<void>
   purchaseReward: (rewardId: string) => Promise<boolean>
   addFriend: (friend: Omit<Friend, 'id'>) => Promise<void>
   removeFriend: (id: string) => Promise<void>
@@ -248,6 +249,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (settings) dispatch({ type: 'SET_SETTINGS', payload: settings })
   }
 
+  const updateProfile = async (changes: Partial<Profile>) => {
+    await profileQueries.update(changes)
+    const profile = await profileQueries.get()
+    if (profile) dispatch({ type: 'SET_PROFILE', payload: profile })
+  }
+
   const purchaseReward = async (rewardId: string): Promise<boolean> => {
     const reward = state.rewards.find(r => r.id === rewardId)
     if (!reward || !state.profile) return false
@@ -307,7 +314,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AppContext.Provider value={{ state, dispatch, addTask, updateTask, deleteTask, completeTask, addSession, completeSession, updateSettings, purchaseReward, addFriend, removeFriend, addChallenge, completeChallenge, refreshData, startOnboarding, finishOnboarding }}>
+    <AppContext.Provider value={{ state, dispatch, addTask, updateTask, deleteTask, completeTask, addSession, completeSession, updateSettings, updateProfile, purchaseReward, addFriend, removeFriend, addChallenge, completeChallenge, refreshData, startOnboarding, finishOnboarding }}>
       {children}
     </AppContext.Provider>
   )
