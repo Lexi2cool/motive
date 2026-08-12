@@ -2,6 +2,7 @@ import { useState } from 'react'
 import TaskForm from '../components/TaskForm'
 import TaskList from '../components/TaskList'
 import StreakCounter from '../components/StreakCounter'
+import OnboardingBanner from '../components/OnboardingBanner'
 import { useApp } from '../context/AppContext'
 import type { Task } from '../db/schema'
 import { Users } from 'lucide-react'
@@ -13,7 +14,7 @@ interface TasksPageProps {
 }
 
 export default function TasksPage({ onOpenSocial }: TasksPageProps) {
-  const { state, addTask, updateTask, deleteTask, completeTask } = useApp()
+  const { state, finishOnboarding, addTask, updateTask, deleteTask, completeTask } = useApp()
   const [editingTask, setEditingTask] = useState<Task | undefined>()
   const [filter, setFilter] = useState<Filter>('all')
   const [showForm, setShowForm] = useState(false)
@@ -36,8 +37,16 @@ export default function TasksPage({ onOpenSocial }: TasksPageProps) {
     await completeTask(task)
   }
 
+  const handleOnboardingComplete = async (house: 'nebula' | 'eclipse' | 'solstice' | 'supernova', displayName: string) => {
+    await finishOnboarding(house, displayName)
+  }
+
   return (
     <div className="space-y-6">
+      {!state.profile?.hasCompletedOnboarding && (
+        <OnboardingBanner onComplete={handleOnboardingComplete} />
+      )}
+
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-black gradient-text">Tasks</h2>

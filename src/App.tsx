@@ -4,7 +4,6 @@ import TasksPage from './pages/TasksPage'
 import TimerPage from './pages/TimerPage'
 import DashboardPage from './pages/DashboardPage'
 import ShopPage from './pages/ShopPage'
-import OnboardingQuiz from './components/OnboardingQuiz'
 import CapybaraMascot from './components/CapybaraMascot'
 import FriendsLeaderboard from './components/FriendsLeaderboard'
 import DailySpin from './components/DailySpin'
@@ -16,7 +15,7 @@ import './index.css'
 type Tab = 'tasks' | 'timer' | 'dashboard' | 'shop' | 'social' | 'avatar' | 'spin'
 
 function AppContent() {
-  const { state, refreshData, finishOnboarding } = useApp()
+  const { state, refreshData } = useApp()
   const [activeTab, setActiveTab] = useState<Tab>('tasks')
   const [showSocial, setShowSocial] = useState(false)
   const [showMinigames, setShowMinigames] = useState(false)
@@ -38,10 +37,6 @@ function AppContent() {
         </div>
       </div>
     )
-  }
-
-  if (state.showOnboarding) {
-    return <OnboardingQuiz onComplete={(house, displayName) => finishOnboarding(house, displayName)} />
   }
 
   const navItems: { id: Tab; label: string; icon: React.ReactNode; gradient: string; activeGradient: string }[] = [
