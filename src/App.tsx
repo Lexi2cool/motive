@@ -136,7 +136,7 @@ function AppContent() {
         <footer className="mt-8 sm:mt-12 pb-8">
           <div className="relative rounded-3xl border-2 border-purple-200/60 bg-white/70 backdrop-blur-xl p-6 sm:p-8 shadow-xl shadow-purple-100/50">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-purple-400 to-transparent rounded-full" />
-            <DailySpin />
+            {activeTab === 'tasks' && <DailySpin />}
           </div>
         </footer>
       </div>
