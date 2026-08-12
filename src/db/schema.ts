@@ -133,12 +133,6 @@ class FocusArenaDB extends Dexie {
       rewards: 'id, type, cost',
       settings: 'id',
       friends: 'id, username, house, totalPoints',
-    }).upgrade(tx => {
-      return tx.table('profile').toCollection().modify(p => {
-        if (!('hasCompletedOnboarding' in p)) {
-          ;(p as any).hasCompletedOnboarding = false
-        }
-      })
     })
     this.version(3).stores({
       tasks: 'id, category, difficulty, completed, dueDate, createdAt',
