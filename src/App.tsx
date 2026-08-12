@@ -4,15 +4,16 @@ import TasksPage from './pages/TasksPage'
 import TimerPage from './pages/TimerPage'
 import DashboardPage from './pages/DashboardPage'
 import ShopPage from './pages/ShopPage'
+import RealLifeRewardsPage from './pages/RealLifeRewardsPage'
 import CapybaraMascot from './components/CapybaraMascot'
 import FriendsLeaderboard from './components/FriendsLeaderboard'
 import DailySpin from './components/DailySpin'
 import AvatarCustomization from './components/AvatarCustomization'
 import Minigames from './components/Minigames'
-import { ListChecks, Timer, BarChart3, Store, Users, Sparkles } from 'lucide-react'
+import { ListChecks, Timer, BarChart3, Store, Users, Sparkles, Gift } from 'lucide-react'
 import './index.css'
 
-type Tab = 'tasks' | 'timer' | 'dashboard' | 'shop' | 'social' | 'avatar' | 'spin'
+type Tab = 'tasks' | 'timer' | 'dashboard' | 'shop' | 'rewards' | 'social' | 'avatar' | 'spin'
 
 function AppContent() {
   const { state, refreshData } = useApp()
@@ -44,6 +45,7 @@ function AppContent() {
     { id: 'timer', label: 'Timer', icon: <Timer size={18} />, gradient: 'from-violet-400 to-purple-400', activeGradient: 'from-violet-500 to-purple-500' },
     { id: 'dashboard', label: 'Dashboard', icon: <BarChart3 size={18} />, gradient: 'from-blue-400 to-cyan-400', activeGradient: 'from-blue-500 to-cyan-500' },
     { id: 'shop', label: 'Shop', icon: <Store size={18} />, gradient: 'from-amber-400 to-orange-400', activeGradient: 'from-amber-500 to-orange-500' },
+    { id: 'rewards', label: 'Rewards', icon: <Gift size={18} />, gradient: 'from-red-400 to-pink-400', activeGradient: 'from-red-500 to-pink-500' },
     { id: 'social', label: 'Social', icon: <Users size={18} />, gradient: 'from-emerald-400 to-teal-400', activeGradient: 'from-emerald-500 to-teal-500' },
     { id: 'avatar', label: 'Avatar', icon: <Sparkles size={18} />, gradient: 'from-pink-400 to-rose-400', activeGradient: 'from-pink-500 to-rose-500' },
   ]
@@ -115,6 +117,7 @@ function AppContent() {
             activeTab === 'timer' ? 'border-violet-300/50 bg-gradient-to-br from-violet-50/80 to-white/60' :
             activeTab === 'dashboard' ? 'border-blue-300/50 bg-gradient-to-br from-blue-50/80 to-white/60' :
             activeTab === 'shop' ? 'border-amber-300/50 bg-gradient-to-br from-amber-50/80 to-white/60' :
+            activeTab === 'rewards' ? 'border-red-300/50 bg-gradient-to-br from-red-50/80 to-white/60' :
             activeTab === 'social' ? 'border-emerald-300/50 bg-gradient-to-br from-emerald-50/80 to-white/60' :
             'border-pink-300/50 bg-gradient-to-br from-pink-50/80 to-white/60'
           }`}>
@@ -123,6 +126,7 @@ function AppContent() {
               {activeTab === 'timer' && <TimerPage onOpenMinigames={() => setShowMinigames(true)} />}
               {activeTab === 'dashboard' && <DashboardPage />}
               {activeTab === 'shop' && <ShopPage />}
+              {activeTab === 'rewards' && <RealLifeRewardsPage />}
               {activeTab === 'social' && <div className="text-center py-12"><p className="text-purple-600 font-semibold">Use the Social button in Tasks page to access friends & challenges!</p></div>}
               {activeTab === 'avatar' && <AvatarCustomization />}
             </div>
