@@ -1,32 +1,45 @@
-# React + TypeScript + Vite
+# Motive
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A pastel, teen-friendly productivity PWA that turns studying into a game. Built with React, TypeScript, Vite, Tailwind CSS, Dexie.js, and Recharts.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Task Manager** — Create, edit, complete tasks with categories, difficulty, and due dates. Earn points on completion.
+- **AI Task Breakdown** — Type a vague goal like "get full marks on my history exam" and get a step-by-step action plan.
+- **Focus Timer** — Pomodoro-style focus sessions with 25/50/90 min modes, break timers, fullscreen focus mode, and audio cues.
+- **Dashboard & Stats** — Activity charts, streak tracking, level progression, category breakdowns, and leaderboard.
+- **Rewards Shop** — Spend points on themes, avatars, badges, motivations, power-ups, and minigames.
+- **House System** — Onboarding quiz sorts you into Nebula, Eclipse, Solstice, or Supernova.
+- **Friends & Challenges** — Add friends, compete on the leaderboard, create and complete challenges.
+- **Avatar Customization** — Mix heads, bodies, accessories, and gradient backgrounds.
+- **Daily Spin Wheel** — Spin once per day for bonus points, free spins, or bad luck.
+- **Break Minigames** — Memory Match and Quick Math during breaks for extra points.
+- **Capybara Mascot** — Playful roasts and encouragements in the corner of the screen.
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Build
+
+```bash
+npm run build
+npm run preview
+```
+
+## Tech Stack
+
+- React 18 + TypeScript
+- Vite 5
+- Tailwind CSS 4
+- Dexie.js (IndexedDB)
+- Recharts
+- Lucide React
+- vite-plugin-pwa (Workbox)
+
+## Repository
+
+[https://github.com/Lexi2cool/motive](https://github.com/Lexi2cool/motive)
