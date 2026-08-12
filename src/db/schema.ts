@@ -117,6 +117,29 @@ class FocusArenaDB extends Dexie {
 
   constructor() {
     super('motive-db')
+    this.version(1).stores({
+      tasks: 'id, category, difficulty, completed, dueDate, createdAt',
+      sessions: 'id, taskId, startedAt, endedAt',
+      profile: 'id',
+      badges: 'id, name',
+      rewards: 'id, type, cost',
+      settings: 'id',
+    })
+    this.version(2).stores({
+      tasks: 'id, category, difficulty, completed, dueDate, createdAt',
+      sessions: 'id, taskId, startedAt, endedAt',
+      profile: 'id',
+      badges: 'id, name',
+      rewards: 'id, type, cost',
+      settings: 'id',
+      friends: 'id, username, house, totalPoints',
+    }).upgrade(tx => {
+      return tx.table('profile').toCollection().modify(p => {
+        if (!('hasCompletedOnboarding' in p)) {
+          ;(p as any).hasCompletedOnboarding = false
+        }
+      })
+    })
     this.version(3).stores({
       tasks: 'id, category, difficulty, completed, dueDate, createdAt',
       sessions: 'id, taskId, startedAt, endedAt',

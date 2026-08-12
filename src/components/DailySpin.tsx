@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { useApp } from '../context/AppContext'
 
 const spinPrizes = [
-  { label: '10 pts', value: 10, probability: 30, color: 'from-purple-400 to-violet-500' },
-  { label: '25 pts', value: 25, probability: 25, color: 'from-violet-400 to-purple-500' },
-  { label: '50 pts', value: 50, probability: 15, color: 'from-pink-400 to-rose-500' },
-  { label: '100 pts', value: 100, probability: 8, color: 'from-amber-400 to-orange-500' },
-  { label: 'Free Spin', value: -1, probability: 5, color: 'from-emerald-400 to-teal-500' },
-  { label: '5 pts', value: 5, probability: 12, color: 'from-blue-400 to-cyan-500' },
-  { label: 'Bad Luck', value: 0, probability: 5, color: 'from-slate-400 to-slate-500' },
+  { label: '10 pts', value: 10, probability: 30, startColor: '#a855f7', endColor: '#8b5cf6' },
+  { label: '25 pts', value: 25, probability: 25, startColor: '#8b5cf6', endColor: '#7c3aed' },
+  { label: '50 pts', value: 50, probability: 15, startColor: '#ec4899', endColor: '#f43f5e' },
+  { label: '100 pts', value: 100, probability: 8, startColor: '#f59e0b', endColor: '#f97316' },
+  { label: 'Free Spin', value: -1, probability: 5, startColor: '#10b981', endColor: '#14b8a6' },
+  { label: '5 pts', value: 5, probability: 12, startColor: '#3b82f6', endColor: '#06b6d4' },
+  { label: 'Bad Luck', value: 0, probability: 5, startColor: '#94a3b8', endColor: '#64748b' },
 ]
 
 export default function DailySpin() {
@@ -116,8 +116,8 @@ export default function DailySpin() {
                 </text>
                 <defs>
                   <linearGradient id={`gradient${idx}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor={prize.color.split(' ')[1].replace('from-', '')} />
-                    <stop offset="100%" stopColor={prize.color.split(' ')[2].replace('to-', '')} />
+                    <stop offset="0%" stopColor={prize.startColor} />
+                    <stop offset="100%" stopColor={prize.endColor} />
                   </linearGradient>
                 </defs>
               </g>
