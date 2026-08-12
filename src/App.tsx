@@ -128,7 +128,7 @@ function AppContent() {
               {activeTab === 'timer' && <TimerPage onOpenMinigames={() => setShowMinigames(true)} />}
               {activeTab === 'dashboard' && <DashboardPage />}
               {activeTab === 'shop' && <ShopPage />}
-              {activeTab === 'social' && <div className="text-center py-12"><p className="text-purple-600 font-semibold">Use the Social button in the top right to access friends & challenges!</p></div>}
+              {activeTab === 'social' && <div className="text-center py-12"><p className="text-purple-600 font-semibold">Use the Social button in Tasks page to access friends & challenges!</p></div>}
               {activeTab === 'avatar' && <AvatarCustomization />}
             </div>
           </div>
