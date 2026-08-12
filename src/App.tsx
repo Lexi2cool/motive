@@ -23,7 +23,7 @@ function AppContent() {
 
   useEffect(() => {
     refreshData()
-  }, [refreshData])
+  }, [])
 
   if (state.loading) {
     return (
